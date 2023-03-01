@@ -7,13 +7,15 @@ import {
   signOut,
   signInWithPopup,
 } from "firebase/auth";
-import { auth, storage, usersCollection } from "../../api/firebase";
+import { auth, db, storage, usersCollection } from "../../api/firebase";
 import LoadingSpinner from "../../ui/loader";
 import { FcAddImage, FcGoogle } from "react-icons/fc";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { addDoc } from "firebase/firestore";
+import { addDoc, doc, setDoc } from "firebase/firestore";
 import { useAuth } from "../../context/registerContext";
+import { useNavigate } from "react-router-dom";
 interface user {
+  username: string;
   email: string;
   password: string;
   confirm: string;
@@ -21,7 +23,8 @@ interface user {
 }
 
 const Register = () => {
-  const [ccount, setAccount] = React.useState({});
+  const navigate = useNavigate();
+
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [user, setUser] = React.useState({} as user);
@@ -35,7 +38,7 @@ const Register = () => {
   async function signUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    const { email, confirm, password } = user;
+    const { email, confirm, password, username } = user;
     if (password != confirm) {
       setLoading(false);
       setError("password tidak sesuai");
@@ -60,13 +63,15 @@ const Register = () => {
           //   console.log("error");
           // },
           () => {
+            const docRef = doc(db, "users", Credential.user.uid);
             // Upload completed successfully, now we can get the download URL
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               updateProfile(Credential.user, {
                 photoURL: downloadURL,
                 displayName: email,
               }).then(async () =>
-                addDoc(usersCollection, {
+                setDoc(docRef, {
+                  username,
                   User_ID: Credential.user.uid,
                   Username: Credential.user.displayName,
                   Email: Credential.user.email,
@@ -80,7 +85,7 @@ const Register = () => {
         setLoading(false);
         alert("account created");
         setError("");
-        setAccount(Credential.user);
+        navigate("/");
       });
     } catch (error) {
       setLoading(false);
@@ -119,6 +124,17 @@ const Register = () => {
           welcome to ChatApp
         </h1>
         <form onSubmit={signUp} className="flex   flex-col mt-5 gap-3">
+          <label htmlFor="username">
+            username
+            <input
+              onChange={handleUserInput}
+              required
+              placeholder="username"
+              id="username"
+              type="username"
+              name="username"
+            />
+          </label>
           <label htmlFor="">
             email
             <input
@@ -174,25 +190,17 @@ const Register = () => {
               type="file"
             />
           </label>
-          <button className="btn">submit</button>
+          <button className="btn w-full p-2 rounded-md duration-300 hover:bg-blue-300 bg-blue-400 text-white">
+            submit
+          </button>
           <p className="text-red-500 text-sm text-center">{error && error}</p>
         </form>
-        <button
-          onClick={() => {
-            signOut(auth);
-            localStorage.removeItem("user");
-          }}
-          className="btn"
-        >
-          {/* {signWithGoogle} */}
-          log out
-        </button>
-        <button
+        {/* <button
           onClick={signWithGoogle}
           className="btn p-2 flex gap-2 border-[1px] rounded-md  shadow-sm items-center w-xs mx-auto"
         >
           <FcGoogle /> <span className="block">google</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );

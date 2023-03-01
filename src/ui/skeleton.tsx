@@ -21,7 +21,7 @@ const PostSkeleton = () => {
       </div>
       <div className="flex justify-between mt-4">
         <div className="bg-gray-300 animate-pulse h-8 w-16"></div>
-        {/* <div className="bg-gray-300 animate-pulse h-8 w-16"></div> */}
+        <div className="bg-gray-300 animate-pulse h-8 w-16"></div>
         <div className="bg-gray-300 animate-pulse h-8 w-16"></div>
       </div>
     </div>

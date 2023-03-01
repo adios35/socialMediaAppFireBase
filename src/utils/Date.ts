@@ -25,7 +25,7 @@ function getMonthName(month) {
     "November",
     "December",
   ];
-  return monthNames[month];s
+  return monthNames[month];
 }
 export function timeAgo(timestamp) {
   // Convert timestamp to seconds and calculate elapsed time

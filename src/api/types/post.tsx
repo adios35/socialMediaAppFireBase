@@ -12,6 +12,7 @@ export interface Comment {
 }
 
 export interface PostInterface {
+  username?: string;
   id?: string;
   user_id?: string;
   author?: string;

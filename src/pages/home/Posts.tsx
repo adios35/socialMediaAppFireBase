@@ -1,13 +1,13 @@
 import React from "react";
 import Post from "./post";
-import { GoComment } from "react-icons/go";
-import { AiOutlineHeart } from "react-icons/ai";
-import { BiDotsVerticalRounded } from "react-icons/bi";
-import { getDoc, DocumentData, getDocs, onSnapshot } from "firebase/firestore";
-import { db, postsCollection } from "../../api/firebase";
+import { onSnapshot } from "firebase/firestore";
+import { postsCollection } from "../../api/firebase";
 import { PostInterface } from "../../api/types/post";
+import PostSkeleton from "../../ui/skeleton";
 
 const Posts = () => {
+  const [loading, setLoading] = React.useState(true);
+
   const [posts, setPosts] = React.useState<PostInterface[]>([]);
 
   React.useEffect(() => {
@@ -17,15 +17,21 @@ const Posts = () => {
         ...doc.data(),
       }));
       setPosts(result);
+      setLoading(false);
     });
     return () => {
       unsubscribe();
     };
   }, []);
-  // console.log(posts);
-
   return (
     <div className="post-container">
+      {loading && (
+        <>
+          <PostSkeleton />
+          <PostSkeleton />
+          <PostSkeleton />
+        </>
+      )}
       {posts?.map((post) => {
         return <Post key={post.id} post={post} />;
       })}

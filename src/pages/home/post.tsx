@@ -6,6 +6,7 @@ import { PostInterface } from "../../api/types/post";
 import { auth, db } from "../../api/firebase";
 import { convertUnixTimestamp, timeAgo } from "../../utils/Date";
 import { doc, updateDoc } from "firebase/firestore";
+import useUserInfo from "../../hooks/useGetUser";
 
 const post = ({ post }: { post: PostInterface }) => {
   const [showComment, setShowComment] = React.useState(false);
@@ -14,25 +15,21 @@ const post = ({ post }: { post: PostInterface }) => {
   const [commentText, setCommentText] = React.useState("");
   const { author, content, comments, id, image, likes, timestamp, user_id } =
     post;
+  const { photoURL, Username } = useUserInfo(user_id);
   const memoizedValue = React.useMemo(() => {
     //@ts-ignore
     return likes?.includes(auth.currentUser?.uid);
   }, [likes]);
+
   async function likePost(postId) {
     const postRef = { ...post };
     delete postRef.id;
-    const addLikes = {
-      ...postRef,
-      likes: [
-        //@ts-ignore
-        user_id,
-      ],
-    };
-    memoizedValue &&
-      //@ts-ignore
-      addLikes?.likes?.splice(likes?.indexOf(auth.currentUser?.uid), 1); //check apakah kita sudah ngelike postingan, jika sudah maka akan di unlike
+    memoizedValue
+      ? //@ts-ignore
+        postRef?.likes?.splice(likes?.indexOf(auth.currentUser?.uid), 1)
+      : postRef?.likes?.push(auth?.currentUser?.uid!); //check apakah kita sudah ngelike postingan, jika sudah maka akan di unlike
     const docref = doc(db, "posts", postId);
-    await updateDoc(docref, addLikes).then(() => {
+    await updateDoc(docref, postRef).then(() => {
       // alert("comment added");
       setError("");
       setCommentText("");
@@ -66,27 +63,31 @@ const post = ({ post }: { post: PostInterface }) => {
       setCommentText("");
     });
   }
+  // console.log(auth.currentUser?.photoURL);
 
   return (
     <div
       key={id}
-      className="posts-container my-5 p-3 shadow-lg rounded-md border-[1px]"
+      className="posts-container my-5 p-3 shadow-lg rounded-md border-[1px] bg-white"
     >
       <nav className="flex justify-between items-center">
-        <div className="profilePhoto max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-[2px]">
-          {auth.currentUser?.photoURL ? (
+        <div className="profilePhoto max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
+          {photoURL ? (
             <img
               //@ts-ignore
-              src={auth?.currentUser?.photoURL}
+              src={photoURL}
               //@ts-ignore
-              alt={auth?.currentUser?.displayName}
+              alt={Username}
+              className="h-9 w-9 rounded-full"
             />
           ) : (
             <div className="bg-gray-300 w-full h-full"></div>
           )}
         </div>
         <div className="profile-info mr-auto">
-          <p className="text-sm font-semibold capitalize">{author}</p>
+          <p className="text-sm font-semibold capitalize">
+            {Username || author}
+          </p>
           <p className="text-xs text-gray-400 font-semibold capitalize">
             {convertUnixTimestamp(timestamp)}
           </p>
@@ -101,7 +102,7 @@ const post = ({ post }: { post: PostInterface }) => {
               <img
                 src={image}
                 alt={id}
-                className="w-full object-cover h-full"
+                className="w-full object-cover h-full "
               />
             </a>
           )}
@@ -135,7 +136,15 @@ const post = ({ post }: { post: PostInterface }) => {
             return (
               <li key={comment.id}>
                 <div className="comment leading-3  items-center my-2 flex gap-2">
-                  <div className="w-8 h-8  rounded-full bg-gray-400 "></div>
+                  {comment.image ? (
+                    <img
+                      src={comment.image}
+                      alt={comment.author}
+                      className="w-8 h-8 rounded-full "
+                    />
+                  ) : (
+                    <div className="w-6 h-8 rounded-full bg-gray-400 "></div>
+                  )}
                   <div className="content">
                     <p className="profileName text-sm text-blue-300 font-medium">
                       {comment?.author}
@@ -153,7 +162,14 @@ const post = ({ post }: { post: PostInterface }) => {
           })}
         </ul>
         <div className="comments flex gap-2 items-center">
-          <div className="profile bg-gray-300 w-11 overflow-auto max-h-10  h-11 p-2  rounded-full"></div>
+          {auth.currentUser?.photoURL ? (
+            <img
+              src={auth.currentUser?.photoURL}
+              className="w-10 border-2 overflow-auto  h-8   rounded-full"
+            />
+          ) : (
+            <div className="profile bg-gray-300 w-11 overflow-auto max-h-10  h-11 p-2  rounded-full"></div>
+          )}
           <input
             onChange={(e) => setCommentText(e.target.value)}
             value={commentText}
