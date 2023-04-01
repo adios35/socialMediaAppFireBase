@@ -1,20 +1,33 @@
 import React from "react";
+
 import { AiOutlineHeart } from "react-icons/ai";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { GoComment } from "react-icons/go";
-import { PostInterface } from "../../api/types/post";
+import { PostInterface } from "../../api/types/postType";
 import { auth, db } from "../../api/firebase";
 import { convertUnixTimestamp, timeAgo } from "../../utils/Date";
 import { doc, updateDoc } from "firebase/firestore";
 import useUserInfo from "../../hooks/useGetUser";
+import { useAuth } from "../../context/registerContext";
+import { Link } from "react-router-dom";
 
 const post = ({ post }: { post: PostInterface }) => {
+  // const { Username:authUserName, photoURL:authPhotoURL, Email } = useUserInfo(auth.currentUser?.uid);
   const [showComment, setShowComment] = React.useState(false);
 
   const [error, setError] = React.useState("");
   const [commentText, setCommentText] = React.useState("");
-  const { author, content, comments, id, image, likes, timestamp, user_id } =
-    post;
+  const {
+    author,
+    content,
+    comments,
+    id,
+    image,
+    likes,
+    timestamp,
+    user_id,
+    username,
+  } = post;
   const { photoURL, Username } = useUserInfo(user_id);
   const memoizedValue = React.useMemo(() => {
     //@ts-ignore
@@ -71,7 +84,10 @@ const post = ({ post }: { post: PostInterface }) => {
       className="posts-container my-5 p-3 shadow-lg rounded-md border-[1px] bg-white"
     >
       <nav className="flex justify-between items-center">
-        <div className="profilePhoto max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
+        <Link
+          to={`/user/${user_id}`}
+          className="profilePhoto max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]"
+        >
           {photoURL ? (
             <img
               //@ts-ignore
@@ -83,15 +99,15 @@ const post = ({ post }: { post: PostInterface }) => {
           ) : (
             <div className="bg-gray-300 w-full h-full"></div>
           )}
-        </div>
-        <div className="profile-info mr-auto">
+        </Link>
+        <Link to={`/user/${user_id}`} className="profile-info mr-auto">
           <p className="text-sm font-semibold capitalize">
             {Username || author}
           </p>
           <p className="text-xs text-gray-400 font-semibold capitalize">
             {convertUnixTimestamp(timestamp)}
           </p>
-        </div>
+        </Link>
         <BiDotsVerticalRounded size={25} />
       </nav>
       <div className="content my-2">
@@ -137,23 +153,27 @@ const post = ({ post }: { post: PostInterface }) => {
               <li key={comment.id}>
                 <div className="comment leading-3  items-center my-2 flex gap-2">
                   {comment.image ? (
-                    <img
-                      src={comment.image}
-                      alt={comment.author}
-                      className="w-8 h-8 rounded-full "
-                    />
+                    <Link to={`/user/${comment.user_id}`}>
+                      <img
+                        src={comment.image}
+                        alt={comment.author}
+                        className="w-8 h-8 rounded-full "
+                      />
+                    </Link>
                   ) : (
                     <div className="w-6 h-8 rounded-full bg-gray-400 "></div>
                   )}
                   <div className="content">
                     <p className="profileName text-sm text-blue-300 font-medium">
-                      {comment?.author}
+                      <Link to={`/user/${comment.user_id}`}>
+                        {username || comment?.author.split("@")[0]}
+                      </Link>
                     </p>
                     <p className="profileName text-sm font-sm text-gray-500">
                       {comment.comment_text}
                     </p>
                     <span className="text-[12px] text-gray-400">
-                      {timeAgo(comment.created_at)}
+                      {convertUnixTimestamp(comment.created_at)}
                     </span>
                   </div>
                 </div>

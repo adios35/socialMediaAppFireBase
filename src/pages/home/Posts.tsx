@@ -2,7 +2,7 @@ import React from "react";
 import Post from "./post";
 import { onSnapshot } from "firebase/firestore";
 import { postsCollection } from "../../api/firebase";
-import { PostInterface } from "../../api/types/post";
+import { PostInterface } from "../../api/types/postType";
 import PostSkeleton from "../../ui/skeleton";
 
 const Posts = () => {

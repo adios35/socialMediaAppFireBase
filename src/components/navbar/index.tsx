@@ -7,15 +7,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { auth } from "../../api/firebase";
 import { useAuth } from "../../context/registerContext";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../ui/loader";
 
 const NavBar = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const { user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    signOut(auth);
+    setIsLoading(true);
+    signOut(auth).then(() => {
+      setIsLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -35,6 +41,7 @@ const NavBar = () => {
 
   return (
     <div className="w-full flex p-3 justify-between items-center shadow-md px-10  bg-white">
+      {isLoading && <LoadingSpinner />}
       <div
         onClick={() => navigate("/")}
         className="logo font-bold text-gray-600 cursor-pointer"
@@ -51,21 +58,20 @@ const NavBar = () => {
         <span className="block">
           <HiEnvelope size={30} />
         </span>
-        <span onClick={() => navigate("/test")} className="block">
-          <FaTools size={30} />
-        </span>
       </div>
       <div className="wrapper relative" ref={dropdownRef}>
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-        >
-          <img
-            src={user?.photoURL!}
-            className="photo border-2 border-blue-400 h-11 w-12 rounded-full "
-            alt="profile"
-          />
-        </div>
+        {user && (
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <img
+              src={user?.photoURL!}
+              className="photo border-2 border-blue-400 h-11 w-12 rounded-full "
+              alt="profile"
+            />
+          </div>
+        )}
         {dropdownOpen && (
           <div className="absolute top-14 right-0 w-56 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-10">
             <div className="px-4 py-2 text-gray-800 text-sm">Logged in as:</div>

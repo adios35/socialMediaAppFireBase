@@ -1,5 +1,13 @@
 import { Timestamp } from "firebase/firestore";
 
+export interface Users {
+  Email: string;
+  User_ID: string;
+  Username: string;
+  password: string;
+  photoURL: string;
+}
+
 export interface Comment {
   id: string;
   post_id: string;

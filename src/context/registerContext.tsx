@@ -9,6 +9,7 @@ interface IAuthContext {
 const AuthContext = createContext<IAuthContext>({
   user: null,
 });
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(
     //@ts-ignore
@@ -30,3 +31,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export const useAuth = (): IAuthContext => {
   return useContext(AuthContext);
 };
+
+// const { user } = useAuth();

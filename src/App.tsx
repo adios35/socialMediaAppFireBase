@@ -3,11 +3,10 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/register";
 import NavBar from "./components/navbar";
-import Exercise from "./Exercise";
-import ImageUploader from "./Exercise";
 import Home from "./pages/home/Home";
 import IsAuth from "./protected/isAuth";
 import Test from "./api/test/test";
+import UserProfile from "./pages/user/UserProfilePage";
 interface lol {
   name: string;
   age: number;
@@ -17,7 +16,6 @@ const App = ({ age, name }: lol) => {
     <div className="bg-gray-100">
       <NavBar />
       <Routes>
-        <Route path="/test" element={<Test />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* <Route path="/test" element={<Test />} /> */}
@@ -29,6 +27,14 @@ const App = ({ age, name }: lol) => {
             </IsAuth>
           }
         />
+        <Route
+          path="user/:id"
+          element={
+            <IsAuth>
+              <UserProfile />
+            </IsAuth>
+          }
+        ></Route>
       </Routes>
     </div>
   );

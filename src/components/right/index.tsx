@@ -1,6 +1,31 @@
+import { doc, getDocs } from "firebase/firestore";
 import React from "react";
+import { Link } from "react-router-dom";
+import { db, usersCollection } from "../../api/firebase";
+import { Users } from "../../api/types/postType";
 
 const Right = () => {
+  const [conversationList, setConversationList] = React.useState([] as Users[]);
+  async function getAllUser() {
+    const users = await getDocs(usersCollection).then((data) => {
+      return data.docs.map((user) => {
+        return { ...user.data() };
+      });
+    });
+    //@ts-ignore
+    setConversationList(users);
+  }
+
+  React.useEffect(() => {
+    // effect code
+    getAllUser();
+
+    return () => {
+      // cleanup code
+    };
+  }, []);
+  console.log(conversationList);
+
   return (
     <div className="p-5">
       <div className="advertisement">
@@ -22,51 +47,32 @@ const Right = () => {
           <span className="text-blue-400 text-sm ">Hide Chat</span>
         </header>
         <ul className="space-y-3 divide-y-2">
-          <li className="flex justify-between relative items-center">
-            <span className="absolute  bottom-0 left-8 z-[9] border-2 h-3 w-3 bg-green-400 rounded-full"></span>
-            <div className="profilePhoto relative max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
-              <img
-                //@ts-ignore
-                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
-                //@ts-ignore
-                className="h-9 w-9 rounded-full object-cover"
-              />
-            </div>
-            <div className="profile-info mr-auto">
-              <p className="text-sm text-gray-600 capitalize">Rohit</p>
-              <p className="text-xs text-gray-400 font-semibold capitalize"></p>
-            </div>
-          </li>
-          <li className="flex justify-between relative items-center">
-            <span className="absolute  bottom-0 left-8 z-[9] border-2 h-3 w-3 bg-green-400 rounded-full"></span>
-            <div className="profilePhoto relative max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
-              <img
-                //@ts-ignore
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cmFuZG9tJTIwcGVvcGxlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                //@ts-ignore
-                className="h-9 w-9 rounded-full object-cover"
-              />
-            </div>
-            <div className="profile-info mr-auto">
-              <p className="text-sm text-gray-600 capitalize">Jack</p>
-              <p className="text-xs text-gray-400 font-semibold capitalize"></p>
-            </div>
-          </li>
-          <li className="flex justify-between relative items-center">
-            <span className="absolute  bottom-0 left-8 z-[9] border-2 h-3 w-3 bg-green-400 rounded-full"></span>
-            <div className="profilePhoto relative max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
-              <img
-                //@ts-ignore
-                src="https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8cmFuZG9tJTIwcGVvcGxlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                //@ts-ignore
-                className="h-9 w-9 rounded-full object-cover"
-              />
-            </div>
-            <div className="profile-info mr-auto">
-              <p className="text-sm text-gray-600 capitalize">Mia</p>
-              <p className="text-xs text-gray-400 font-semibold capitalize"></p>
-            </div>
-          </li>
+          {conversationList?.map((user) => {
+            return (
+              <li className="flex justify-between relative items-center">
+                <Link
+                  className="flex items-center"
+                  to={`/user/${user.User_ID}`}
+                >
+                  <span className="absolute  bottom-0 left-8 z-[9] border-2 h-3 w-3 bg-green-400 rounded-full"></span>
+                  <div className="profilePhoto relative max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
+                    <img
+                      //@ts-ignore
+                      src={user?.photoURL}
+                      //@ts-ignore
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  </div>
+                  <div className="profile-info mr-auto">
+                    <p className="text-sm text-gray-600 capitalize">
+                      {user.Username || user?.Email.split("@")[0]}
+                    </p>
+                    <p className="text-xs text-gray-400 font-semibold capitalize"></p>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

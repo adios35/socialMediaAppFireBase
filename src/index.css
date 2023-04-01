@@ -3,4 +3,5 @@
 @tailwind utilities;
 * {
   font-family: "Roboto", sans-serif;
+  scroll-behavior: smooth;
 }

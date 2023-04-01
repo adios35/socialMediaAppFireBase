@@ -2,7 +2,7 @@ import React from "react";
 
 const PostSkeleton = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg my-2 shadow-md">
       <div className="flex items-center">
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <div className="bg-gray-300 animate-pulse h-full w-full"></div>

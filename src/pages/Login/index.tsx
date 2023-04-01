@@ -8,11 +8,14 @@ import {
 } from "firebase/auth";
 import { auth } from "../../api/firebase";
 import { Link, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../ui/loader";
 interface user {
   email: string;
   password: string;
 }
 const Login = () => {
+  const [loading, setLoading] = React.useState(false);
+
   const [error, setError] = React.useState("");
   const [user, setUser] = React.useState({} as user);
   const navigate = useNavigate();
@@ -24,30 +27,25 @@ const Login = () => {
   }
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
     const { email, password } = user;
     signInWithEmailAndPassword(auth, email, password)
       .then((Credential) => {
+        setLoading(true);
+        setLoading(false);
         localStorage.setItem("user", JSON.stringify(Credential.user));
         navigate("/");
       })
       .catch((err) => {
+        setLoading(false);
         setError(err.message);
       });
   }
-  async function signWithGoogle() {
-    try {
-      const Provider = new GoogleAuthProvider();
-      const account = await signInWithPopup(auth, Provider)
-        .then((user) => user)
-        .then(() => navigate("/"));
-    } catch (err) {
-      setError(err.message);
-    }
-  }
 
   return (
-    <div className="w-screen  grid place-items-center  ">
-      <div className="login  mx-auto w-full p-5 rounded-md  mt-20 shadow-md max-w-md">
+    <div className="w-screen h-screen grid place-items-center  ">
+      {loading && <LoadingSpinner />}
+      <div className="login bg-white mx-auto w-full p-5 rounded-md   shadow-md max-w-md">
         <h1 className="text-3xl text-center tetx-gray-500">Login</h1>
         <form
           onSubmit={submit}

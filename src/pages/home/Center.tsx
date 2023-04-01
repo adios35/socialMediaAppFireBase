@@ -8,8 +8,8 @@ import { addDoc, doc, setDoc } from "firebase/firestore";
 import LoadingSpinner from "../../ui/loader";
 import useUserInfo from "../../hooks/useGetUser";
 import { useAuth } from "../../context/registerContext";
+import { updateProfile } from "firebase/auth";
 const Center = () => {
-  const { user } = useAuth();
   const { Username, photoURL, Email } = useUserInfo(auth.currentUser?.uid);
   const [percentage, setPercentage] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
@@ -53,7 +53,7 @@ const Center = () => {
           image: null,
           content: post,
           timestamp: Date.now(),
-          likes: 0,
+          likes: [],
           comments: [],
         }).then(() => {
           alert("berhasil");
@@ -77,13 +77,14 @@ const Center = () => {
         <div className="post bg-white relative w-full   border-[1px] p-2 rounded-md shadow-md flex gap-2">
           <div className="profile">
             <img
-              src={user?.photoURL!}
+              src={photoURL && photoURL}
               className="photo h-11 w-12 rounded-full "
-              alt={Username || Email}
             />
           </div>
           <div className="userInput w-full">
-            <p className="text-gray-600">{Username || Email}</p>
+            <p className="text-gray-600 capitalize font-semibold">
+              {Username || Email}
+            </p>
             <textarea
               placeholder="create post..."
               rows={5}

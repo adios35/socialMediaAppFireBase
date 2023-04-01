@@ -13,7 +13,7 @@ import { FcAddImage, FcGoogle } from "react-icons/fc";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { addDoc, doc, setDoc } from "firebase/firestore";
 import { useAuth } from "../../context/registerContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 interface user {
   username: string;
   email: string;
@@ -28,6 +28,7 @@ const Register = () => {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [user, setUser] = React.useState({} as user);
+
   function handleUserInput(e: ChangeEvent<HTMLInputElement>) {
     const { value, name, type, files } = e.currentTarget;
     setUser((e) => {
@@ -68,7 +69,7 @@ const Register = () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               updateProfile(Credential.user, {
                 photoURL: downloadURL,
-                displayName: email,
+                displayName: username,
               }).then(async () =>
                 setDoc(docRef, {
                   username,
@@ -77,6 +78,8 @@ const Register = () => {
                   Email: Credential.user.email,
                   photoURL: Credential.user.photoURL,
                   password,
+                  following: [],
+                  followers: [],
                 })
               );
             });
@@ -195,12 +198,19 @@ const Register = () => {
           </button>
           <p className="text-red-500 text-sm text-center">{error && error}</p>
         </form>
+
         {/* <button
           onClick={signWithGoogle}
           className="btn p-2 flex gap-2 border-[1px] rounded-md  shadow-sm items-center w-xs mx-auto"
         >
           <FcGoogle /> <span className="block">google</span>
-        </button> */}
+</button> */}
+        <p className="text-gray-600 text-sm text-center">
+          Already have an account?{" "}
+          <Link className="text-blue-400" to="/login">
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
