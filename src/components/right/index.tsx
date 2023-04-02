@@ -1,7 +1,7 @@
 import { doc, getDocs } from "firebase/firestore";
 import React from "react";
 import { Link } from "react-router-dom";
-import { db, usersCollection } from "../../api/firebase";
+import { auth, db, usersCollection } from "../../api/firebase";
 import { Users } from "../../api/types/postType";
 
 const Right = () => {
@@ -24,7 +24,6 @@ const Right = () => {
       // cleanup code
     };
   }, []);
-  console.log(conversationList);
 
   return (
     <div className="p-5">
@@ -48,8 +47,12 @@ const Right = () => {
         </header>
         <ul className="space-y-3 divide-y-2">
           {conversationList?.map((user) => {
+            if (user.User_ID == auth.currentUser?.uid!) return;
             return (
-              <li className="flex justify-between relative items-center">
+              <li
+                key={user.User_ID}
+                className="flex justify-between relative items-center"
+              >
                 <Link
                   className="flex items-center"
                   to={`/user/${user.User_ID}`}
@@ -65,7 +68,7 @@ const Right = () => {
                   </div>
                   <div className="profile-info mr-auto">
                     <p className="text-sm text-gray-600 capitalize">
-                      {user.Username || user?.Email.split("@")[0]}
+                      {user?.Email.split("@")[0]}
                     </p>
                     <p className="text-xs text-gray-400 font-semibold capitalize"></p>
                   </div>

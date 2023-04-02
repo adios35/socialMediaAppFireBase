@@ -19,7 +19,7 @@ interface user {
   email: string;
   password: string;
   confirm: string;
-  avatar: File;
+  avatar: File | null;
 }
 
 const Register = () => {
@@ -27,7 +27,13 @@ const Register = () => {
 
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [user, setUser] = React.useState({} as user);
+  const [user, setUser] = React.useState({
+    username: "",
+    email: "",
+    password: "",
+    confirm: "",
+    avatar: null,
+  });
 
   function handleUserInput(e: ChangeEvent<HTMLInputElement>) {
     const { value, name, type, files } = e.currentTarget;
@@ -54,9 +60,9 @@ const Register = () => {
       ).then(async (Credential) => {
         const storageRef = ref(
           storage,
-          "images/" + user.avatar.name + Date.now()
+          "images/" + user.avatar.name! + Date.now()
         );
-        const uploadTask = uploadBytesResumable(storageRef, user.avatar);
+        const uploadTask = uploadBytesResumable(storageRef, user.avatar!);
         await uploadTask.on(
           "state_changed",
           // (snapshot) => {},
@@ -66,23 +72,25 @@ const Register = () => {
           () => {
             const docRef = doc(db, "users", Credential.user.uid);
             // Upload completed successfully, now we can get the download URL
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              updateProfile(Credential.user, {
-                photoURL: downloadURL,
-                displayName: username,
-              }).then(async () =>
-                setDoc(docRef, {
-                  username,
-                  User_ID: Credential.user.uid,
-                  Username: Credential.user.displayName,
-                  Email: Credential.user.email,
-                  photoURL: Credential.user.photoURL,
-                  password,
-                  following: [],
-                  followers: [],
-                })
-              );
-            });
+            getDownloadURL(uploadTask.snapshot.ref).then(
+              async (downloadURL) => {
+                await updateProfile(Credential.user, {
+                  photoURL: downloadURL,
+                  displayName: username,
+                }).then(
+                  async () =>
+                    await setDoc(docRef, {
+                      User_ID: Credential.user.uid,
+                      Username: Credential.user.displayName || email,
+                      Email: Credential.user.email,
+                      photoURL: Credential.user.photoURL,
+                      password,
+                      following: [],
+                      followers: [],
+                    })
+                );
+              }
+            );
           }
         );
         setLoading(false);
@@ -99,15 +107,15 @@ const Register = () => {
   async function signWithGoogle() {
     const Provider = new GoogleAuthProvider();
     const account = await signInWithPopup(auth, Provider).then((user) => user);
-    const storageRef = ref(storage, "images/" + user.avatar.name);
-    const uploadTask = uploadBytesResumable(storageRef, user.avatar);
+    const storageRef = ref(storage, "images/" + user.avatar.name!);
+    const uploadTask = uploadBytesResumable(storageRef, user.avatar!);
     await uploadTask.on("state_changed", () => {
       // Upload completed successfully, now we can get the download URL
       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
         updateProfile(account.user, {
           photoURL: downloadURL,
-        }).then(() => {
-          addDoc(usersCollection, {
+        }).then(async () => {
+          await addDoc(usersCollection, {
             User_ID: account.user.uid,
             Username: account.user.displayName,
             Email: account.user.email,
@@ -127,7 +135,7 @@ const Register = () => {
           welcome to ChatApp
         </h1>
         <form onSubmit={signUp} className="flex   flex-col mt-5 gap-3">
-          <label htmlFor="username">
+          {/* <label htmlFor="username">
             username
             <input
               onChange={handleUserInput}
@@ -137,7 +145,7 @@ const Register = () => {
               type="username"
               name="username"
             />
-          </label>
+          </label> */}
           <label htmlFor="">
             email
             <input
@@ -180,7 +188,7 @@ const Register = () => {
               <img
                 className="rounded-full max-w-10 max-h-10 "
                 src={URL.createObjectURL(user.avatar)}
-                alt={user.avatar.name}
+                alt={user.avatar.name!}
               />
             )}
             <input

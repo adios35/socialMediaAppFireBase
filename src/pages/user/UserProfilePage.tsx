@@ -20,7 +20,7 @@ import { useAuth } from "../../context/registerContext";
 import { getUserDataFn } from "../../utils/User";
 import { FirebaseError } from "firebase/app";
 import { update } from "firebase/database";
-
+import "./style.css";
 interface user {
   Username: string;
   Email: string;
@@ -82,26 +82,25 @@ const UserProfile = () => {
     const currentUserDb = await getUserDataFn(currentUser?.uid);
     // console.log(currentUserDb.following);
 
-    const following = [...currentUserDb.following];
+    const following = [...currentUserDb?.following];
     const followers = [...user.followers];
     // const q = await query(usersCollection, where("User_ID", "==", id));
 
-    if (followers.includes(currentUser?.uid)) {
-      followers.splice(followers.indexOf(currentUser?.uid), 1);
+    if (followers.includes(currentUser?.uid!)) {
+      followers.splice(followers.indexOf(currentUser?.uid!), 1);
       following.splice(following.indexOf(user.User_ID), 1);
       // console.log(followers, following);
     } else {
-      followers.push(currentUser?.uid);
+      followers.push(currentUser?.uid!);
       following.push(user.User_ID);
       // console.log(followers, following);
     }
     const docref = doc(db, "users", id);
     await updateDoc(docref, { followers }).then(() => {
-      alert("followed");
       setError("");
       // setCommentText("");
     });
-    const currentUserDocref = doc(db, "users", currentUser?.uid);
+    const currentUserDocref = doc(db, "users", currentUser?.uid!);
     await updateDoc(currentUserDocref, { following }).then(() => {
       // alert("followed");
       setError("");
@@ -138,6 +137,7 @@ const UserProfile = () => {
               <p className="text-gray-500">following</p>
             </div>
           </div>
+
           {id !== auth.currentUser?.uid && (
             <button
               onClick={() => handleFollowing(id)}
@@ -148,10 +148,14 @@ const UserProfile = () => {
               } p-2 rounded-md flex`}
             >
               {isFetching && (
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 ..."
-                  viewBox="0 0 24 24"
-                ></svg>
+                <div
+                  className=" inline-block h-5 w-5 mr-2 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-secondary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                  role="status"
+                >
+                  <span className="!absolute  !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                    Loading...
+                  </span>
+                </div>
               )}
               <span>{isFollowing ? "following" : "follow"}</span>
             </button>

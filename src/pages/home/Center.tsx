@@ -10,7 +10,7 @@ import useUserInfo from "../../hooks/useGetUser";
 import { useAuth } from "../../context/registerContext";
 import { updateProfile } from "firebase/auth";
 const Center = () => {
-  const { Username, photoURL, Email } = useUserInfo(auth.currentUser?.uid);
+  // const { photoURL, Email } = useUserInfo(auth.currentUser?.uid);
   const [percentage, setPercentage] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
   const [loading, setLoading] = React.useState(false);
@@ -77,13 +77,13 @@ const Center = () => {
         <div className="post bg-white relative w-full   border-[1px] p-2 rounded-md shadow-md flex gap-2">
           <div className="profile">
             <img
-              src={photoURL && photoURL}
+              src={auth?.currentUser?.photoURL!}
               className="photo h-11 w-12 rounded-full "
             />
           </div>
           <div className="userInput w-full">
             <p className="text-gray-600 capitalize font-semibold">
-              {Username || Email}
+              {auth.currentUser?.email}
             </p>
             <textarea
               placeholder="create post..."

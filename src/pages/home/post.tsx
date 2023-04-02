@@ -91,7 +91,7 @@ const post = ({ post }: { post: PostInterface }) => {
           {photoURL ? (
             <img
               //@ts-ignore
-              src={photoURL}
+              src={photoURL && photoURL}
               //@ts-ignore
               alt={Username}
               className="h-9 w-9 rounded-full"

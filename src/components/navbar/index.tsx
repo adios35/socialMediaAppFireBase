@@ -6,7 +6,7 @@ import { MdOndemandVideo } from "react-icons/md";
 import React, { useState, useEffect, useRef } from "react";
 import { auth } from "../../api/firebase";
 import { useAuth } from "../../context/registerContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../ui/loader";
 
 const NavBar = () => {
@@ -46,7 +46,7 @@ const NavBar = () => {
         onClick={() => navigate("/")}
         className="logo font-bold text-gray-600 cursor-pointer"
       >
-        <span className=" text-blue-400">Chat</span>App
+        <span className=" text-blue-400">fire</span>Soc
       </div>
       <div className="center flex text-blue-500 w-2/5 justify-evenly s items-center">
         <span className="block">
@@ -75,9 +75,11 @@ const NavBar = () => {
         {dropdownOpen && (
           <div className="absolute top-14 right-0 w-56 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-10">
             <div className="px-4 py-2 text-gray-800 text-sm">Logged in as:</div>
-            <div className="px-4 py-2 text-gray-800 text-lg font-bold">
-              {user?.displayName}
-            </div>
+            <Link to={`user/${user?.uid}`}>
+              <div className="px-4 py-2 text-gray-800 text-lg font-bold">
+                {auth.currentUser?.email?.split("@")[0]}
+              </div>
+            </Link>
             <hr />
             <button
               onClick={handleLogout}
