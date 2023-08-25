@@ -1,9 +1,9 @@
+import React, { useState, useEffect, useRef } from "react";
 import { signOut } from "firebase/auth";
 import { IoMdNotifications } from "react-icons/io";
 import { HiEnvelope } from "react-icons/hi2";
 import { FaTools } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
-import React, { useState, useEffect, useRef } from "react";
 import { auth } from "../../api/firebase";
 import { useAuth } from "../../context/registerContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,43 +12,41 @@ import LoadingSpinner from "../../ui/loader";
 const NavBar = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-
   const { user } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  function handleClick(e) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(e.target as Node)
+    ) {
+      setDropdownOpen(false);
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  });
   const handleLogout = () => {
     setIsLoading(true);
     signOut(auth).then(() => {
       setIsLoading(false);
+      setDropdownOpen(false);
     });
   };
 
-  useEffect(() => {
-    const handleDocumentClick = (event) => {
-      //@ts-ignore
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleDocumentClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
-    };
-  }, []);
-
   return (
-    <div className="w-full flex p-3 justify-between items-center shadow-md px-10  bg-white">
+    <div className="w-full  flex p-3 justify-between items-center shadow-md px-4 md:px-10 bg-white">
       {isLoading && <LoadingSpinner />}
       <div
         onClick={() => navigate("/")}
         className="logo font-bold text-gray-600 cursor-pointer"
       >
-        <span className=" text-blue-400">fire</span>Soc
+        <span className="text-blue-400 text-xl">4</span>Chat
       </div>
-      <div className="center flex text-blue-500 w-2/5 justify-evenly s items-center">
+      <div className="center hidden md:flex text-blue-500 w-2/5 justify-evenly items-center">
         <span className="block">
           <IoMdNotifications size={30} />
         </span>
@@ -60,10 +58,23 @@ const NavBar = () => {
         </span>
       </div>
       <div className="wrapper relative" ref={dropdownRef}>
+        <div
+          className="flex items-center cursor-pointer md:hidden"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <div className="hamburger bg-red-500 ">
+            <span className="hamburger-bar"></span>
+            <span className="hamburger-bar"></span>
+            <span className="hamburger-bar"></span>
+          </div>
+        </div>
         {user && (
           <div
-            className="flex items-center cursor-pointer"
+            // className={`flex items-center cursor-pointer ${
+            //   mobileMenuOpen ? "md:hidden" : "hidden md:flex"
+            // }`}
             onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="cursor-pointer"
           >
             <img
               src={user?.photoURL!}

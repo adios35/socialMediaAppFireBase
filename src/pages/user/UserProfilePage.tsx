@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from "react";
+
 // import { Firestore } from "firebase/firestore";
 import UserLoadingSkeleton from "../../ui/UserLoadingSkeleton";
-import useUserInfo from "../../hooks/useGetUser";
+import { AiOutlineLeft } from "react-icons/ai";
 import Post from "../../pages/home/post";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
-  Query,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { auth, db, postsCollection, usersCollection } from "../../api/firebase";
+import { auth, db, postsCollection } from "../../api/firebase";
 import { PostInterface } from "../../api/types/postType";
 import { useAuth } from "../../context/registerContext";
 import { getUserDataFn } from "../../utils/User";
-import { FirebaseError } from "firebase/app";
-import { update } from "firebase/database";
 import "./style.css";
 interface user {
   Username: string;
@@ -31,6 +28,7 @@ interface user {
 }
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const [isFetching, setIsFetching] = React.useState(false);
 
@@ -113,11 +111,17 @@ const UserProfile = () => {
   // }, []);
   if (error) return <h1 className="text-red-500">{error}</h1>;
   return (
-    <div className="flex flex-col  p-5 items-center justify-center space-y-4">
+    <div className="flex flex-col relative p-5 items-center justify-center space-y-4">
       {isLoading ? (
         <UserLoadingSkeleton />
       ) : (
         <>
+          <button
+            onClick={() => navigate(-1)}
+            className="back-btn text-2xl absolute top-4 left-4 bg-white rounded-xl text-gray-500 duration-300 active:scale-125 p-2"
+          >
+            <AiOutlineLeft />
+          </button>
           <img
             className="w-32 h-32 rounded-full border-blue-300 border-2"
             src={user.photoURL}
@@ -137,30 +141,38 @@ const UserProfile = () => {
               <p className="text-gray-500">following</p>
             </div>
           </div>
+          <h2 className="text-lg font-bold">{user.Username || user.Email}</h2>
 
           {id !== auth.currentUser?.uid && (
-            <button
-              onClick={() => handleFollowing(id)}
-              className={`${
-                isFollowing
-                  ? "bg-gray-300 text-gray-700"
-                  : "bg-blue-400 text-white"
-              } p-2 rounded-md flex`}
-            >
-              {isFetching && (
-                <div
-                  className=" inline-block h-5 w-5 mr-2 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-secondary motion-reduce:animate-[spin_1.5s_linear_infinite]"
-                  role="status"
-                >
-                  <span className="!absolute  !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                    Loading...
-                  </span>
-                </div>
-              )}
-              <span>{isFollowing ? "following" : "follow"}</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleFollowing(id)}
+                className={`${
+                  isFollowing
+                    ? "bg-gray-300 text-gray-700"
+                    : "bg-blue-400 text-white"
+                } p-2 rounded-md flex`}
+              >
+                {isFetching && (
+                  <div
+                    className=" inline-block h-5 w-5 mr-2 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-secondary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                    role="status"
+                  >
+                    <span className="!absolute  !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                      Loading...
+                    </span>
+                  </div>
+                )}
+                <span>{isFollowing ? "following" : "follow"}</span>
+              </button>
+              {/* <button
+                onClick={() => navigate(`/chat/${id}`)}
+                className="bg-blue-400 p-2 px-3 rounded-md active:scale-125 duration-300 text-white"
+              >
+                pesan
+              </button> */}
+            </div>
           )}
-          <h2 className="text-lg font-bold">{user.Username || user.Email}</h2>
           <p className="text-gray-600 text-sm">
             {/* <span className="font-bold">{followerCount}</span> followers */}
           </p>

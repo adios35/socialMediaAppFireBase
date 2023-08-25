@@ -7,13 +7,14 @@ import Home from "./pages/home/Home";
 import IsAuth from "./protected/isAuth";
 import Test from "./api/test/test";
 import UserProfile from "./pages/user/UserProfilePage";
+import ChatComponent from "./pages/chat";
 interface lol {
   name: string;
   age: number;
 }
 const App = ({ age, name }: lol) => {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 min-h-screen overflow-hidden">
       <NavBar />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -27,6 +28,14 @@ const App = ({ age, name }: lol) => {
             </IsAuth>
           }
         />
+        {/* <Route
+          path="chat/:id"
+          element={
+            <IsAuth>
+              <ChatComponent />
+            </IsAuth>
+          }
+        /> */}
         <Route
           path="user/:id"
           element={

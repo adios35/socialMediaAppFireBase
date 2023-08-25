@@ -1,37 +1,37 @@
 import React, { FormEvent } from "react";
-import { FcGoogle } from "react-icons/fc";
-import "./style.css";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../api/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../ui/loader";
-interface user {
+
+interface User {
   email: string;
   password: string;
 }
+
 const Login = () => {
   const [loading, setLoading] = React.useState(false);
-
   const [error, setError] = React.useState("");
-  const [user, setUser] = React.useState({} as user);
+  const [user, setUser] = React.useState<User>({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
+
   function handleUserInput(e: React.ChangeEvent<HTMLInputElement>) {
     const { value, name } = e.currentTarget;
-    setUser((e) => {
-      return { ...e, [name]: value };
-    });
+    setUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
   }
+
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     const { email, password } = user;
     signInWithEmailAndPassword(auth, email, password)
       .then((Credential) => {
-        setLoading(true);
         setLoading(false);
         localStorage.setItem("user", JSON.stringify(Credential.user));
         navigate("/");
@@ -43,53 +43,52 @@ const Login = () => {
   }
 
   return (
-    <div className="w-screen h-screen grid place-items-center  ">
-      {loading && <LoadingSpinner />}
-      <div className="login bg-white mx-auto w-full p-5 rounded-md   shadow-md max-w-md">
-        <h1 className="text-3xl text-center tetx-gray-500">Login</h1>
-        <form
-          onSubmit={submit}
-          className="flex [&>*]:space-y-2   flex-col mt-5  gap-3"
-        >
-          <label htmlFor="">
-            <span>Email</span>
-            <input
-              onChange={handleUserInput}
-              required
-              placeholder="email"
-              id="email"
-              type="email"
-              name="email"
-            />
-          </label>
-          <label htmlFor="password">
-            <span>Passwords</span>
-            <input
-              onChange={handleUserInput}
-              required
-              placeholder="password"
-              id="password"
-              type="password"
-              name="password"
-            />
-          </label>
-          <button className="btn">submit</button>
+    <div className="container w-full h-screen  px-6 grid place-items-center mx-auto">
+      <div className=" flex items-center justify-center max-w-[400px] w-full bg-gray-100">
+        {loading && <LoadingSpinner />}
+        <div className="login bg-white mx-auto w-full p-5 rounded-md shadow-md max-w-md h-full">
+          <h1 className="text-3xl text-center text-gray-500 mb-5">Login</h1>
+          <form onSubmit={submit} className="flex flex-col space-y-3">
+            <label htmlFor="email" className="flex flex-col">
+              <span className="text-gray-600 mb-1">Email</span>
+              <input
+                onChange={handleUserInput}
+                required
+                placeholder="Email"
+                id="email"
+                type="email"
+                name="email"
+                className="px-4 py-2 border rounded-md"
+              />
+            </label>
+            <label htmlFor="password" className="flex flex-col">
+              <span className="text-gray-600 mb-1">Password</span>
+              <input
+                onChange={handleUserInput}
+                required
+                placeholder="Password"
+                id="password"
+                type="password"
+                name="password"
+                className="px-4 py-2 border rounded-md"
+              />
+            </label>
+            <button
+              className="btn bg-blue-500 text-white hover:bg-blue-600 px-4 py-2"
+              type="submit"
+            >
+              Submit
+            </button>
 
-          <p className="text-center text-red-600">{error}</p>
-          <p className="text-sm text-center">
-            Don't have an account?
-            <Link className="text-blue-500" to={"/register"}>
-              {" "}
-              Register
-            </Link>
-          </p>
-        </form>
-        {/* <button
-          onClick={signWithGoogle}
-          className="btn p-2 flex gap-2 border-[1px] rounded-md  shadow-sm items-center w-xs mx-auto"
-        >
-          <FcGoogle /> <span className="block">google</span>
-        </button> */}
+            <p className="text-center text-red-600">{error}</p>
+            <p className="text-sm text-center">
+              Don't have an account?
+              <Link className="text-blue-500" to="/register">
+                Register
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );

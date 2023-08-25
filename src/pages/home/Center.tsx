@@ -69,7 +69,7 @@ const Center = () => {
   }
   return (
     <div className="container scroll-smooth overflow-y-scroll h-full flex-1 basis-[150px] ">
-      <div className="center pl-[15px] ">
+      <div className="center  pl-[15px] ">
         {loading && <LoadingSpinner percentage={percentage} />}
         <h1 className="text-2xl  py-3 text-gray-700 text-semibold capitalize">
           hello to my simple social media app

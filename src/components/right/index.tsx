@@ -26,7 +26,7 @@ const Right = () => {
   }, []);
 
   return (
-    <div className="p-5">
+    <div className="p-5 hidden md:block">
       <div className="advertisement">
         <header className="flex text-gray-600 items-center my-3 justify-between">
           <p className="">
@@ -45,7 +45,7 @@ const Right = () => {
           <span>Conversation</span>
           <span className="text-blue-400 text-sm ">Hide Chat</span>
         </header>
-        <ul className="space-y-3 divide-y-2">
+        <ul className="space-y-3 h-[50vh]  overflow-y-scroll divide-y-2">
           {conversationList?.map((user) => {
             if (user.User_ID == auth.currentUser?.uid!) return;
             return (
@@ -61,6 +61,7 @@ const Right = () => {
                   <div className="profilePhoto relative max-h-11 overflow-hidden max-w-11 mr-2 rounded-full border-blue-400 border-[2px]">
                     <img
                       //@ts-ignore
+
                       src={user?.photoURL}
                       //@ts-ignore
                       className="h-9 w-9 rounded-full object-cover"

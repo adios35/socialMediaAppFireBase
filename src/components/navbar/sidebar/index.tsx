@@ -33,7 +33,7 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="w-full  px-16">
+    <div className="w-full hidden lg:block  px-16">
       <ul className="space-y-7 divide-y-3 p-3  border-b-2 my-5">
         {menus.map((menu) => (
           <li key={menu.id} className="flex text-blue-500 gap-2 items-center">

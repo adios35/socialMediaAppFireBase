@@ -6,12 +6,14 @@ import Right from "../../components/right";
 
 const Home = () => {
   return (
-    <div className=" flex gap-3  divide-x-2 h-screen">
-      <div className="left flex-1">
+    <div className=" flex gap-3 justify-center h-screen">
+      <div className="left ">
         <SideBar />
       </div>
-      <Center />
-      <div className="right flex-1">
+      <div className="center">
+        <Center />
+      </div>
+      <div className="right md:max-w-xs ">
         <Right />
       </div>
     </div>
