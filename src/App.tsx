@@ -28,14 +28,14 @@ const App = ({ age, name }: lol) => {
             </IsAuth>
           }
         />
-        {/* <Route
+        <Route
           path="chat/:id"
           element={
             <IsAuth>
               <ChatComponent />
             </IsAuth>
           }
-        /> */}
+        />
         <Route
           path="user/:id"
           element={

@@ -165,12 +165,12 @@ const UserProfile = () => {
                 )}
                 <span>{isFollowing ? "following" : "follow"}</span>
               </button>
-              {/* <button
+              <button
                 onClick={() => navigate(`/chat/${id}`)}
                 className="bg-blue-400 p-2 px-3 rounded-md active:scale-125 duration-300 text-white"
               >
                 pesan
-              </button> */}
+              </button>
             </div>
           )}
           <p className="text-gray-600 text-sm">
